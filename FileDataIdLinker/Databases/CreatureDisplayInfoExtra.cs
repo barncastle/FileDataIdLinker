@@ -2,19 +2,18 @@
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using FileDataIdLinker.Constants;
 
 namespace FileDataIdLinker.Databases
 {
     /// <summary>
-    /// ( MaterialResourcesID, ComponentSection )
+    /// (MaterialResourcesID, IsHD)
     /// </summary>
-    public class ItemDisplayInfoMaterialRes : Dictionary<uint, MaterialRes>
+    public class CreatureDisplayInfoExtra : Dictionary<uint, (uint ID, bool IsHD)>
     {
-        private const string Url = "https://wow.tools/api/export/?name=itemdisplayinfomaterialres&build=";
+        private const string Url = "https://wow.tools/api/export/?name=creaturedisplayinfoextra&build=";
         private readonly string Build;
 
-        public ItemDisplayInfoMaterialRes(string build)
+        public CreatureDisplayInfoExtra(string build)
         {
             Build = build;
         }
@@ -30,20 +29,22 @@ namespace FileDataIdLinker.Databases
                 while (await csv.ReadAsync())
                 {
                     var record = csv.GetRecord<dynamic>();
+                    uint id = uint.Parse(record.ID);
+                    uint normal = uint.Parse(record.BakeMaterialResourcesID);
+                    uint hd = uint.Parse(record.HDBakeMaterialResourcesID);
 
-                    this[uint.Parse(record.MaterialResourcesID)] = new MaterialRes()
-                    {
-                        ItemDisplayInfoID = uint.Parse(record.ItemDisplayInfoID),
-                        Section = (ComponentSection)byte.Parse(record.ComponentSection)
-                    };
+                    if (normal > 0)
+                        this[normal] = (id, false);
+                    if (hd > 0)
+                        this[hd] = (id, true);
                 }
             }
         }
     }
 
-    public class MaterialRes
+    public class InfoExtraEntry
     {
-        public uint ItemDisplayInfoID;
-        public ComponentSection Section;
+        public uint ID;
+        public bool IsHD;
     }
 }

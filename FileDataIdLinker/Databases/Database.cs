@@ -9,9 +9,11 @@ namespace FileDataIdLinker.Databases
 
         public static ComponentModelFileData ComponentModelFileData;
         public static ComponentTextureFileData ComponentTextureFileData;
+        public static CreatureDisplayInfoExtra CreatureDisplayInfoExtra;
         public static CreatureModelData CreatureModelData;
+        public static ItemAppearance ItemAppearance;
         public static ItemDisplayInfo ItemDisplayInfo;
-        public static ItemDisplayInfoMaterial ItemDisplayInfoMaterial;
+        public static ItemDisplayInfoMaterialRes ItemDisplayInfoMaterialRes;
         public static LightSkybox LightSkybox;
         public static ModelFileData ModelFileData;
         public static SpellVisualEffectName SpellVisualEffectName;
@@ -23,9 +25,11 @@ namespace FileDataIdLinker.Databases
             ListFile = new ListFile();
             ComponentModelFileData = new ComponentModelFileData(build);
             ComponentTextureFileData = new ComponentTextureFileData(build);
+            CreatureDisplayInfoExtra = new CreatureDisplayInfoExtra(build);
             CreatureModelData = new CreatureModelData(build);
+            ItemAppearance = new ItemAppearance(build);
             ItemDisplayInfo = new ItemDisplayInfo(build);
-            ItemDisplayInfoMaterial = new ItemDisplayInfoMaterial(build);
+            ItemDisplayInfoMaterialRes = new ItemDisplayInfoMaterialRes(build);
             LightSkybox = new LightSkybox(build);
             ModelFileData = new ModelFileData(build);
             SpellVisualEffectName = new SpellVisualEffectName(build);
@@ -42,9 +46,11 @@ namespace FileDataIdLinker.Databases
             Task.WaitAll(
                 ComponentModelFileData.Load(),
                 ComponentTextureFileData.Load(),
+                CreatureDisplayInfoExtra.Load(),
                 CreatureModelData.Load(),
+                ItemAppearance.Load(),
                 ItemDisplayInfo.Load(),
-                ItemDisplayInfoMaterial.Load(),
+                ItemDisplayInfoMaterialRes.Load(),
                 LightSkybox.Load(),
                 SpellVisualEffectName.Load(),
                 SpellVisualKitAreaModel.Load()

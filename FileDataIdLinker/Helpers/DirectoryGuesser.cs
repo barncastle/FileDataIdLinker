@@ -71,7 +71,7 @@ namespace FileDataIdLinker.Helpers
 
         private bool IsSpell(M2Model model)
         {
-            if (Database.SpellVisualKitAreaModel.Contains(model.FileDataId) || Database.SpellVisualEffectName.Contains(model.FileDataId))
+            if (Database.SpellVisualKitAreaModel.Contains(model.FileDataId) /*|| Database.SpellVisualEffectName.Contains(model.FileDataId)*/)
             {
                 model.Directory = "spells/";
                 return true;

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using FileDataIdLinker.Databases;
@@ -16,14 +17,13 @@ namespace FileDataIdLinker
 
         static void Main(string[] args)
         {
-            Database.Load("8.2.0.30170");
+            Database.Load("8.2.0.30262");
 
             TextureGuesser = new TextureGuesser();
             DirectoryGuesser = new DirectoryGuesser();
 
-
             Models = new List<M2Model>();
-            EnumerateModels(@"D:\m2 dump\unknown");
+            EnumerateModels(@"D:\unknown");
 
             // fix duplicate names
             var matching = Models.GroupBy(x => x.FullName).Where(x => x.Count() > 1);
@@ -36,6 +36,8 @@ namespace FileDataIdLinker
             TextureGuesser.Guess(Models);
 
             DumpListfile();
+
+            Console.ReadLine();
         }
 
         private static void EnumerateModels(string directory)
@@ -56,11 +58,39 @@ namespace FileDataIdLinker
 
         private static void DumpListfile()
         {
-            var filemap = Models.SelectMany(x => x.FileNames).Concat(TextureGuesser.FileNames);
+            var filemap = Models.SelectMany(x => x.FileNames)
+                                .Concat(TextureGuesser.FileNames)
+                                .Concat(TextureGuesser.TextureComponentGuesser.FileNames)
+                                .Concat(TextureGuesser.TextureBakedGuesser.FileNames)
+                                .Where(x => !Database.ListFile.ContainsKey(x.Key))
+                                .ToArray();
+
+            var dupes = filemap.GroupBy(x => x.Value.ToLowerInvariant())
+                               .Where(x => x.Count() > 1)
+                               .SelectMany(x => x.Select(y => y.Key))
+                               .ToHashSet();
+
             using (var fs = new StreamWriter("output.csv"))
+            {
+                int lastdotIdx;
+                string name;
+
                 foreach (var map in filemap)
-                    if (!Database.ListFile.ContainsKey(map.Key))
-                        fs.WriteLine(map.Key + ";" + map.Value.ToLowerInvariant());
+                {
+                    name = map.Value.ToLowerInvariant();
+
+                    if (!dupes.Contains(map.Key))
+                    {
+                        fs.WriteLine(map.Key + ";" + name);
+                    }
+                    else
+                    {
+                        lastdotIdx = name.LastIndexOf('.');
+                        fs.WriteLine(map.Key + ";" + name.Substring(0, lastdotIdx) + "_" + map.Key + Path.GetExtension(name));
+                    }
+                }
+            }
+
         }
     }
 }
