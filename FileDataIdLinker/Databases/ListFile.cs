@@ -8,7 +8,7 @@ namespace FileDataIdLinker.Databases
 {
     public class ListFile : Dictionary<uint, string>
     {
-        private const string Url = "https://wow.tools/casc/listfile/download/csv";
+        private const string Url = "https://wow.tools/casc/listfile/download/csv/unverified";
 
         public async Task Load()
         {
